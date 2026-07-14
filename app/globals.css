@@ -128,3 +128,59 @@
     @apply font-sans;
   }
 }
+:root {
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+@keyframes gradient-drift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes chip-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(218, 165, 32, 0.25); }
+  50% { box-shadow: 0 0 40px rgba(218, 165, 32, 0.5); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.bg-gradient-animated {
+  background-size: 200% 200%;
+  animation: gradient-drift 12s ease infinite;
+}
+
+.animate-chip-in {
+  animation: chip-in 0.5s ease forwards;
+}
+
+.animate-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-gradient-animated,
+  .animate-chip-in,
+  .animate-glow,
+  .animate-float {
+    animation: none !important;
+  }
+}

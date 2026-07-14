@@ -10,4 +10,45 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+ }
+
+model Usuario {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  telefone  String?
+  avatarUrl String?
+  criadoEm  DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  perfilCliente  PerfilCliente?
+  perfilCorretor PerfilCorretor?
+
+  @@map("usuarios")
 }
+
+model PerfilCliente {
+  id        String   @id @default(cuid())
+  usuarioId String   @unique
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  criadoEm  DateTime @default(now())
+
+  @@map("perfis_cliente")
+}
+
+model PerfilCorretor {
+  id           String   @id @default(cuid())
+  usuarioId    String   @unique
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  creci        String?  // Registro profissional do corretor (CRECI)
+  creditos     Int      @default(0)
+  score        Float    @default(0)
+  verificado   Boolean  @default(false)
+
+  criadoEm     DateTime @default(now())
+
+  @@map("perfis_corretor")
+} 
