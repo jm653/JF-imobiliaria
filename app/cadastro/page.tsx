@@ -1,115 +1,54 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { cadastrarUsuario } from "@/app/actions/auth";
-import BackgroundPremium from "@/components/BackgroundPremium";
+import dynamic from "next/dynamic";
+import Header from "@/components/cadastro/Header";
+import Hero from "@/components/cadastro/Hero";
+import StorySection from "@/components/cadastro/StorySection";
+import SectionAiParse from "@/components/cadastro/SectionAiParse";
+import SectionCompatibilidade from "@/components/cadastro/SectionCompatibilidade";
+import SectionCorretor from "@/components/cadastro/SectionCorretor";
+import SignupForm from "@/components/cadastro/SignupForm";
+import SmoothScroll from "@/components/cadastro/SmoothScroll";
+import { TipoContaProvider } from "@/components/cadastro/TipoContaContext";
+
+const Scene3D = dynamic(() => import("@/components/cadastro/Scene3D"), {
+  ssr: false,
+});
 
 export default function CadastroPage() {
-  const router = useRouter();
-  const [erro, setErro] = useState("");
-  const [carregando, setCarregando] = useState(false);
-
-  async function handleSubmit(formData: FormData) {
-    setCarregando(true);
-    setErro("");
-
-    const resultado = await cadastrarUsuario(formData);
-
-    if (resultado?.erro) {
-      setErro(resultado.erro);
-      setCarregando(false);
-      return;
-    }
-
-    router.push("/login");
-  }
-
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0E27] px-4 text-white">
-      <BackgroundPremium />
+    <TipoContaProvider>
+      <SmoothScroll>
+        <main className="relative bg-[#050817] text-white">
+          <Scene3D />
+          <Header />
 
-      <div className="relative z-10 w-full max-w-md">
-        <Link
-          href="/"
-          className="mb-8 inline-block font-display text-lg font-bold tracking-tight"
-        >
-          JF <span className="text-[#DAA520]">Imobiliária</span>
-        </Link>
+          <Hero />
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 shadow-2xl backdrop-blur-xl">
-          <h1 className="font-display text-2xl font-bold text-white">
-            Criar conta
-          </h1>
-          <p className="mt-1 font-body text-sm text-white/50">
-            Comece a encontrar ou anunciar imóveis com IA
-          </p>
+          <StorySection
+            id="historia"
+            eyebrow="O problema"
+            title="Todos procuram. Poucos encontram."
+          />
 
-          <form action={handleSubmit} className="mt-7 space-y-4">
-            <div>
-              <label className="mb-1.5 block font-body text-sm text-white/70">
-                Nome completo
-              </label>
-              <input
-                type="text"
-                name="nome"
-                required
-                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2.5 font-body text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#DAA520]/60 focus:ring-2 focus:ring-[#DAA520]/20"
-                placeholder="Seu nome"
-              />
-            </div>
+          <StorySection title="O mercado imobiliário ainda funciona como há décadas." />
 
-            <div>
-              <label className="mb-1.5 block font-body text-sm text-white/70">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2.5 font-body text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#DAA520]/60 focus:ring-2 focus:ring-[#DAA520]/20"
-                placeholder="voce@email.com"
-              />
-            </div>
+          <StorySection eyebrow="A virada" title="Nós mudamos isso." />
 
-            <div>
-              <label className="mb-1.5 block font-body text-sm text-white/70">
-                Senha
-              </label>
-              <input
-                type="password"
-                name="senha"
-                required
-                minLength={6}
-                className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2.5 font-body text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#DAA520]/60 focus:ring-2 focus:ring-[#DAA520]/20"
-                placeholder="Mínimo 6 caracteres"
-              />
-            </div>
+          <SectionAiParse />
 
-            {erro && (
-              <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 font-body text-sm text-red-300">
-                {erro}
-              </p>
-            )}
+          <SectionCompatibilidade />
 
-            <button
-              type="submit"
-              disabled={carregando}
-              className="animate-glow mt-2 w-full rounded-full bg-[#DAA520] py-3 font-body text-sm font-semibold text-[#0A0E27] transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
-            >
-              {carregando ? "Criando conta..." : "Criar conta"}
-            </button>
-          </form>
+          <SectionCorretor />
 
-          <p className="mt-6 text-center font-body text-sm text-white/40">
-            Já tem uma conta?{" "}
-            <Link href="/login" className="text-[#F4C95D] hover:underline">
-              Entrar
-            </Link>
-          </p>
-        </div>
-      </div>
-    </main>
+          <StorySection
+            eyebrow="Central dos Imóveis JF"
+            title="Bem-vindo ao futuro do mercado imobiliário."
+          />
+
+          <SignupForm />
+        </main>
+      </SmoothScroll>
+    </TipoContaProvider>
   );
 }

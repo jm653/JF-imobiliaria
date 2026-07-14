@@ -4,18 +4,18 @@ import "./globals.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--fonte-display",
   weight: ["600", "700", "800"],
 });
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-body",
+  variable: "--fonte-body",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--fonte-mono",
   weight: ["500", "600"],
 });
 
