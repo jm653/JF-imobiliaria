@@ -16,6 +16,9 @@ const frases = [
   "Muito mais oportunidades.",
 ];
 
+const fraseExplicativa =
+  "Você publica o que procura. A IA conecta você aos corretores certos.";
+
 export default function Hero() {
   const { setTipoConta } = useTipoConta();
   const secaoRef = useRef<HTMLElement>(null);
@@ -85,12 +88,21 @@ export default function Hero() {
             {frase}
           </motion.p>
         ))}
+
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 4.9, ease: "easeOut" }}
+          className="max-w-md pt-2 font-body text-base text-white/75 sm:text-lg"
+        >
+          {fraseExplicativa}
+        </motion.p>
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 5.6 }}
+        transition={{ duration: 1, delay: 5.8 }}
         className="mt-10 flex flex-wrap justify-center gap-4"
       >
         <button

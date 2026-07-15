@@ -17,14 +17,14 @@ export default function StorySection({
   return (
     <section
       id={id}
-      className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
+      className="relative flex min-h-[65vh] flex-col items-center justify-center px-6 py-16 text-center"
     >
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-15%" }}
         transition={{ duration: 0.9, ease: "easeOut" }}
-        className="max-w-3xl"
+        className="max-w-2xl"
       >
         {eyebrow && (
           <span className="mb-4 inline-block font-mono text-xs uppercase tracking-[0.2em] text-[#DAA520]">
@@ -34,7 +34,11 @@ export default function StorySection({
         <h2 className="font-display text-3xl font-bold leading-tight text-white sm:text-5xl">
           {title}
         </h2>
-        {children && <div className="mt-8">{children}</div>}
+        {children && (
+          <p className="mt-5 font-body text-base leading-relaxed text-white/55">
+            {children}
+          </p>
+        )}
       </motion.div>
     </section>
   );
