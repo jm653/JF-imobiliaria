@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "@/components/Providers";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -20,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JF Imobiliária — Encontre. Conecte. Negocie.",
+  title: "Central dos Imóveis JF — O futuro do mercado imobiliário",
   description:
     "O marketplace imobiliário que usa IA para conectar clientes e corretores automaticamente.",
 };
@@ -35,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

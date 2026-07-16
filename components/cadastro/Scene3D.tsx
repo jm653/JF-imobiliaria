@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { PerformanceMonitor, AdaptiveDpr } from "@react-three/drei";
+import { useRef, useMemo, useEffect } from "react";
+import { Canvas, useFrame, useThree, invalidate } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -39,6 +38,7 @@ function CameraRig({ reduzMovimento }: { reduzMovimento: boolean }) {
           end: "bottom bottom",
           scrub: 1,
         },
+        onUpdate: () => invalidate(),
       });
 
       for (let i = 1; i < waypointsCamera.length; i++) {
@@ -123,10 +123,18 @@ function RedeNeural({ reduzMovimento }: { reduzMovimento: boolean }) {
         x: (e.clientX / window.innerWidth) * 2 - 1,
         y: (e.clientY / window.innerHeight) * 2 - 1,
       };
+      if (!reduzMovimento) invalidate();
+    }
+    function aoRolar() {
+      invalidate();
     }
     window.addEventListener("pointermove", aoMoverMouse);
-    return () => window.removeEventListener("pointermove", aoMoverMouse);
-  }, []);
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", aoMoverMouse);
+      window.removeEventListener("scroll", aoRolar);
+    };
+  }, [reduzMovimento]);
 
   const posicoesPontos = useMemo(() => {
     const total = 90;
@@ -173,26 +181,19 @@ function RedeNeural({ reduzMovimento }: { reduzMovimento: boolean }) {
     return geometria;
   }, [posicoesPontos]);
 
-  useFrame((state) => {
+  useFrame(() => {
     const alturaTotal =
       document.documentElement.scrollHeight - window.innerHeight;
     const progresso =
       alturaTotal > 0 ? Math.min(window.scrollY / alturaTotal, 1) : 0;
 
     if (grupoRef.current && !reduzMovimento) {
-      grupoRef.current.rotation.y += 0.0008;
-      grupoRef.current.rotation.y +=
-        (mouseAlvo.current.x * 0.4 - grupoRef.current.rotation.y * 0.05) *
-        0.03;
-      grupoRef.current.rotation.x +=
-        (-mouseAlvo.current.y * 0.2 - grupoRef.current.rotation.x) * 0.03;
+      grupoRef.current.rotation.y = mouseAlvo.current.x * 0.3;
+      grupoRef.current.rotation.x = -mouseAlvo.current.y * 0.15;
     }
 
     if (nucleoRef.current) {
-      const pulso = reduzMovimento
-        ? 0
-        : Math.sin(state.clock.elapsedTime * 1.5) * 0.06;
-      const escala = 0.5 + progresso * 1.6 + pulso;
+      const escala = 0.5 + progresso * 1.6;
       nucleoRef.current.scale.setScalar(escala);
       const material = nucleoRef.current
         .material as THREE.MeshStandardMaterial;
@@ -240,7 +241,6 @@ function RedeNeural({ reduzMovimento }: { reduzMovimento: boolean }) {
 }
 
 export default function Scene3D() {
-  const [dpr, setDpr] = useState(1);
   const reduzMovimento =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -249,14 +249,10 @@ export default function Scene3D() {
     <div className="fixed inset-0 -z-10 bg-[#050817]">
       <Canvas
         camera={{ position: [0, 0.5, 14], fov: 50 }}
-        dpr={dpr}
-        gl={{ antialias: false }}
+        dpr={1}
+        gl={{ antialias: false, powerPreference: "high-performance" }}
+        frameloop="demand"
       >
-        <PerformanceMonitor
-          onIncline={() => setDpr(1.5)}
-          onDecline={() => setDpr(0.75)}
-        />
-        <AdaptiveDpr pixelated />
         <ambientLight intensity={0.2} />
         <Skyline />
         <RedeNeural reduzMovimento={reduzMovimento} />
@@ -265,8 +261,8 @@ export default function Scene3D() {
           <Bloom
             luminanceThreshold={0.15}
             luminanceSmoothing={0.9}
-            intensity={1}
-            height={200}
+            intensity={0.9}
+            height={160}
           />
         </EffectComposer>
       </Canvas>

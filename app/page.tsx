@@ -1,78 +1,79 @@
-import Link from "next/link";
-import AiDemo from "@/components/AiDemo";
-import BackgroundPremium from "@/components/BackgroundPremium";
+"use client";
+
+import dynamic from "next/dynamic";
+import Header from "@/components/cadastro/Header";
+import Hero from "@/components/cadastro/Hero";
+import StorySection from "@/components/cadastro/StorySection";
+import SectionComoFunciona from "@/components/cadastro/SectionComoFunciona";
+import SectionAiParse from "@/components/cadastro/SectionAiParse";
+import SectionCompatibilidade from "@/components/cadastro/SectionCompatibilidade";
+import SectionCorretor from "@/components/cadastro/SectionCorretor";
+import SectionCreditos from "@/components/cadastro/SectionCreditos";
+import SectionBeneficios from "@/components/cadastro/SectionBeneficios";
+import SectionRanking from "@/components/cadastro/SectionRanking";
+import SectionEcossistema from "@/components/cadastro/SectionEcossistema";
+import SignupForm from "@/components/cadastro/SignupForm";
+import SmoothScroll from "@/components/cadastro/SmoothScroll";
+import { TipoContaProvider } from "@/components/cadastro/TipoContaContext";
+
+const Scene3D = dynamic(() => import("@/components/cadastro/Scene3D"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0A0E27] text-white">
-      {/* Fundo em gradiente animado */}
-     <BackgroundPremium />
+    <TipoContaProvider>
+      <SmoothScroll>
+        <main className="relative bg-[#050817] text-white">
+          <Scene3D />
+          <Header />
 
-      {/* Navegação */}
-      <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-10">
-        <span className="font-display text-lg font-bold tracking-tight">
-          JF <span className="text-[#DAA520]">Imobiliária</span>
-        </span>
-        <nav className="hidden items-center gap-8 font-body text-sm text-white/70 md:flex">
-          <a href="#como-funciona" className="hover:text-white transition-colors">
-            Como funciona
-          </a>
-          <a href="#corretores" className="hover:text-white transition-colors">
-            Para corretores
-          </a>
-          <Link href="/login" className="hover:text-white transition-colors">
-            Entrar
-          </Link>
-        </nav>
-        <Link
-          href="/cadastro"
-          className="rounded-full border border-[#DAA520]/40 bg-[#DAA520]/10 px-5 py-2 font-body text-sm font-medium text-[#F4C95D] transition-all hover:bg-[#DAA520]/20 hover:border-[#DAA520]/70"
-        >
-          Criar conta
-        </Link>
-      </header>
+          <Hero />
 
-      {/* Hero */}
-      <section className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 pb-24 pt-12 lg:grid-cols-2 lg:px-10 lg:pt-20">
-        <div>
-          <span className="inline-block rounded-full border border-[#DAA520]/30 bg-[#DAA520]/10 px-4 py-1.5 font-mono text-xs tracking-wide text-[#F4C95D]">
-            Marketplace de demanda imobiliária
-          </span>
+          <StorySection
+            id="historia"
+            eyebrow="O problema"
+            title="Todos procuram. Poucos encontram."
+          >
+            Hoje, clientes gastam meses pesquisando os mesmos anúncios
+            repetidos. Corretores publicam e esperam. Ninguém encontra o que
+            realmente procura, na hora certa.
+          </StorySection>
 
-          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
-            Você não procura imóveis.
-            <br />
-            <span className="bg-gradient-to-r from-[#DAA520] to-[#F4C95D] bg-clip-text text-transparent">
-              Eles vêm até você.
-            </span>
-          </h1>
+          <StorySection title="O mercado imobiliário ainda funciona como há décadas.">
+            Portais tradicionais só mostram o que já está anunciado. Se o
+            imóvel ideal não existir hoje, você nunca vai saber quando ele
+            aparecer.
+          </StorySection>
 
-          <p className="mt-6 max-w-lg font-body text-lg text-white/60">
-            Diga o que você quer, em linguagem natural. Nossa IA interpreta o
-            pedido, encontra os imóveis compatíveis e conecta você direto com
-            os corretores certos — sem perder tempo procurando.
-          </p>
+          <StorySection eyebrow="A virada" title="Nós mudamos isso.">
+            Na Central dos Imóveis JF, você não procura imóveis — você
+            publica exatamente o que quer, e os corretores competem para te
+            atender.
+          </StorySection>
 
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Link
-              href="/cadastro?tipo=cliente"
-              className="animate-glow rounded-full bg-[#DAA520] px-7 py-3.5 font-body text-sm font-semibold text-[#0A0E27] transition-transform hover:scale-[1.03] active:scale-[0.98]"
-            >
-              Quero encontrar um imóvel
-            </Link>
-            <Link
-              href="/cadastro?tipo=corretor"
-              className="rounded-full border border-white/20 px-7 py-3.5 font-body text-sm font-semibold text-white/90 transition-all hover:border-white/40 hover:bg-white/5"
-            >
-              Sou corretor
-            </Link>
-          </div>
-        </div>
+          <SectionComoFunciona />
+          <SectionAiParse />
+          <SectionCompatibilidade />
+          <SectionCorretor />
+          <SectionCreditos />
+          <SectionBeneficios />
+          <SectionRanking />
+          <SectionEcossistema />
 
-        <div className="flex justify-center lg:justify-end">
-          <AiDemo />
-        </div>
-      </section>
-    </main>
+          <StorySection
+            eyebrow="Central dos Imóveis JF"
+            title="Bem-vindo ao futuro do mercado imobiliário."
+          >
+            Não é apenas mais um portal de anúncios. É a primeira plataforma
+            onde clientes publicam o que querem e corretores competem, com
+            IA, créditos e reconhecimento por performance — tudo em um único
+            lugar.
+          </StorySection>
+
+          <SignupForm />
+        </main>
+      </SmoothScroll>
+    </TipoContaProvider>
   );
 }

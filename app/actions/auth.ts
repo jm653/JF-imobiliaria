@@ -32,3 +32,25 @@ export async function cadastrarUsuario(formData: FormData) {
 
   return { sucesso: true };
 }
+export async function entrarUsuario(formData: FormData) {
+  const email = formData.get("email") as string;
+  const senha = formData.get("senha") as string;
+
+  if (!email || !senha) {
+    return { erro: "Preencha todos os campos." };
+  }
+
+  const usuario = await prisma.usuario.findUnique({ where: { email } });
+
+  if (!usuario) {
+    return { erro: "Email ou senha incorretos." };
+  }
+
+  const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+
+  if (!senhaCorreta) {
+    return { erro: "Email ou senha incorretos." };
+  }
+
+  return { sucesso: true };
+}

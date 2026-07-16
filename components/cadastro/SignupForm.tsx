@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { signIn } from "next-auth/react";
 import { cadastrarUsuario } from "@/app/actions/auth";
 import { useTipoConta } from "./TipoContaContext";
 
@@ -24,7 +25,19 @@ export default function SignupForm() {
       return;
     }
 
-    router.push("/login");
+    try {
+      await signIn("credentials", {
+        email: formData.get("email"),
+        senha: formData.get("senha"),
+        redirect: false,
+      });
+    } catch (erroLogin) {
+      // Mesmo se o login automático falhar, a conta já foi criada.
+      // Seguimos em frente e deixamos a pessoa entrar manualmente se precisar.
+      console.error("Erro ao logar automaticamente após cadastro:", erroLogin);
+    }
+
+    router.push("/area");
   }
 
   return (

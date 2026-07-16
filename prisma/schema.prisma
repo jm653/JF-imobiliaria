@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
@@ -10,16 +8,16 @@ generator client {
 
 datasource db {
   provider = "postgresql"
- }
+}
 
 model Usuario {
-  id        String   @id @default(cuid())
-  nome      String
-  email     String   @unique
-  senha     String
-  telefone  String?
-  avatarUrl String?
-  criadoEm  DateTime @default(now())
+  id           String   @id @default(cuid())
+  nome         String
+  email        String   @unique
+  senha        String
+  telefone     String?
+  avatarUrl    String?
+  criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
   perfilCliente  PerfilCliente?
@@ -33,22 +31,65 @@ model PerfilCliente {
   usuarioId String   @unique
   usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  criadoEm  DateTime @default(now())
+  criadoEm DateTime @default(now())
+
+  pedidos PedidoImovel[]
 
   @@map("perfis_cliente")
 }
 
 model PerfilCorretor {
-  id           String   @id @default(cuid())
-  usuarioId    String   @unique
-  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  usuarioId String  @unique
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
-  creci        String?  // Registro profissional do corretor (CRECI)
-  creditos     Int      @default(0)
-  score        Float    @default(0)
-  verificado   Boolean  @default(false)
+  creci      String?
+  creditos   Int     @default(0)
+  score      Float   @default(0)
+  verificado Boolean @default(false)
 
-  criadoEm     DateTime @default(now())
+  criadoEm DateTime @default(now())
+
+  desbloqueios Desbloqueio[]
 
   @@map("perfis_corretor")
-} 
+}
+
+model PedidoImovel {
+  id        String        @id @default(cuid())
+  clienteId String
+  cliente   PerfilCliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  cidade              String
+  bairro              String?
+  valorMaximo         Int
+  quartos             Int?
+  banheiros           Int?
+  garagem             Boolean @default(false)
+  varanda             Boolean @default(false)
+  quintal             Boolean @default(false)
+  aceitaPet           Boolean @default(false)
+  aceitaFinanciamento Boolean @default(false)
+  descricaoLivre      String?
+
+  status   String   @default("ativo")
+  criadoEm DateTime @default(now())
+
+  desbloqueios Desbloqueio[]
+
+  @@map("pedidos_imovel")
+}
+
+model Desbloqueio {
+  id         String         @id @default(cuid())
+  pedidoId   String
+  pedido     PedidoImovel   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  corretorId String
+  corretor   PerfilCorretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
+
+  creditosGastos Int      @default(10)
+  criadoEm       DateTime @default(now())
+
+  @@unique([pedidoId, corretorId])
+  @@map("desbloqueios")
+}

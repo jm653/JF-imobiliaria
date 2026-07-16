@@ -16,8 +16,8 @@ const frases = [
   "Muito mais oportunidades.",
 ];
 
-const fraseExplicativa =
-  "Você publica o que procura. A IA conecta você aos corretores certos.";
+const fraseExplicativaLinha1 = "Você publica o que procura.";
+const fraseExplicativaLinha2 = "A IA conecta você aos corretores certos.";
 
 export default function Hero() {
   const { setTipoConta } = useTipoConta();
@@ -28,11 +28,16 @@ export default function Hero() {
     if (!secaoRef.current || !logoRef.current) return;
 
     const contexto = gsap.context(() => {
-      gsap.fromTo(
-        logoRef.current,
-        { opacity: 0, scale: 0.85 },
-        { opacity: 1, scale: 1, duration: 1.4, ease: "power3.out" }
-      );
+      // gsap.set aplica o estado inicial (some, meio pequeno) só depois que
+      // o GSAP confirma que está rodando — se por algum motivo o GSAP falhar,
+      // a logo permanece visível (padrão do CSS) em vez de sumir pra sempre.
+      gsap.set(logoRef.current, { opacity: 0, scale: 0.85 });
+      gsap.to(logoRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 1.4,
+        ease: "power3.out",
+      });
 
       gsap.to(logoRef.current, {
         scale: 0.75,
@@ -60,7 +65,7 @@ export default function Hero() {
       ref={secaoRef}
       className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
     >
-      <div ref={logoRef} className="relative mb-8 opacity-0">
+      <div ref={logoRef} className="relative mb-8">
         <div className="absolute inset-0 -z-10 rounded-full bg-[#DAA520]/30 blur-3xl" />
         <Image
           src="/logo.jpg"
@@ -93,9 +98,11 @@ export default function Hero() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 4.9, ease: "easeOut" }}
-          className="max-w-md pt-2 font-body text-base text-white/75 sm:text-lg"
+          className="max-w-md pt-2 font-body text-base leading-relaxed text-white/75 sm:text-lg"
         >
-          {fraseExplicativa}
+          {fraseExplicativaLinha1}
+          <br />
+          {fraseExplicativaLinha2}
         </motion.p>
       </div>
 
