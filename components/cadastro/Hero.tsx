@@ -98,7 +98,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 4.9, ease: "easeOut" }}
-          className="max-w-md pt-2 font-body text-base leading-relaxed text-white/75 sm:text-lg"
+         className="mx-auto max-w-md pt-2 text-center font-body text-base leading-relaxed text-white/75 sm:text-lg"
         >
           {fraseExplicativaLinha1}
           <br />
