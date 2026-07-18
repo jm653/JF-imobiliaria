@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
@@ -51,6 +48,7 @@ model PerfilCorretor {
   criadoEm DateTime @default(now())
 
   desbloqueios Desbloqueio[]
+  imoveis      Imovel[]
 
   @@map("perfis_corretor")
 }
@@ -88,8 +86,31 @@ model Desbloqueio {
   corretor   PerfilCorretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
 
   creditosGastos Int      @default(10)
+  estagio        String   @default("novo_lead")
   criadoEm       DateTime @default(now())
 
   @@unique([pedidoId, corretorId])
   @@map("desbloqueios")
+}
+
+model Imovel {
+  id         String         @id @default(cuid())
+  corretorId String
+  corretor   PerfilCorretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
+
+  titulo    String
+  cidade    String
+  bairro    String?
+  valor     Int
+  quartos   Int?
+  banheiros Int?
+  garagem   Boolean @default(false)
+  varanda   Boolean @default(false)
+  quintal   Boolean @default(false)
+  descricao String?
+
+  status   String   @default("disponivel")
+  criadoEm DateTime @default(now())
+
+  @@map("imoveis")
 }

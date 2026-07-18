@@ -23,6 +23,11 @@ const waypointsCamera: { p: number; pos: [number, number, number] }[] = [
   { p: 1.0, pos: [0, 0, 13] },
 ];
 
+function aleatorioEstavel(indice: number, sal: number) {
+  const valor = Math.sin(indice * 9301 + sal * 49297) * 233280;
+  return valor - Math.floor(valor);
+}
+
 function CameraRig({ reduzMovimento }: { reduzMovimento: boolean }) {
   const { camera } = useThree();
   const camState = useRef({ x: 0, y: 0.5, z: 14 });
@@ -79,8 +84,8 @@ function Skyline() {
     const itens: { posicao: [number, number, number]; altura: number }[] = [];
     for (let i = 0; i < total; i++) {
       const angulo = (i / total) * Math.PI * 2;
-      const raio = 9 + Math.random() * 3;
-      const altura = 2 + Math.random() * 5;
+      const raio = 9 + aleatorioEstavel(i, 1) * 3;
+      const altura = 2 + aleatorioEstavel(i, 2) * 5;
       itens.push({
         posicao: [
           Math.cos(angulo) * raio,
@@ -140,9 +145,9 @@ function RedeNeural({ reduzMovimento }: { reduzMovimento: boolean }) {
     const total = 90;
     const posicoes = new Float32Array(total * 3);
     for (let i = 0; i < total; i++) {
-      const raio = 5 + Math.random() * 4;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
+      const raio = 5 + aleatorioEstavel(i, 3) * 4;
+      const theta = aleatorioEstavel(i, 4) * Math.PI * 2;
+      const phi = Math.acos(aleatorioEstavel(i, 5) * 2 - 1);
       posicoes[i * 3] = raio * Math.sin(phi) * Math.cos(theta);
       posicoes[i * 3 + 1] = raio * Math.sin(phi) * Math.sin(theta) * 0.5;
       posicoes[i * 3 + 2] = raio * Math.cos(phi);
@@ -161,7 +166,7 @@ function RedeNeural({ reduzMovimento }: { reduzMovimento: boolean }) {
         const dy = posicoesPontos[i * 3 + 1] - posicoesPontos[j * 3 + 1];
         const dz = posicoesPontos[i * 3 + 2] - posicoesPontos[j * 3 + 2];
         const distancia = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (distancia < 2.1 && Math.random() > 0.92) {
+        if (distancia < 2.1 && aleatorioEstavel(i * totalPontos + j, 6) > 0.92) {
           pares.push(
             posicoesPontos[i * 3],
             posicoesPontos[i * 3 + 1],
@@ -207,9 +212,7 @@ function RedeNeural({ reduzMovimento }: { reduzMovimento: boolean }) {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            count={posicoesPontos.length / 3}
-            array={posicoesPontos}
-            itemSize={3}
+            args={[posicoesPontos, 3]}
           />
         </bufferGeometry>
         <pointsMaterial

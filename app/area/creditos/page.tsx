@@ -24,16 +24,16 @@ export default async function CreditosPage() {
 
   return (
     <DashboardShell nome={session.user.name ?? ""}>
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DAA520]">
+      <p className="jf-kicker">
         Créditos
       </p>
       <h1 className="mb-8 mt-1 font-display text-2xl font-bold text-white sm:text-3xl">
         Sua energia na plataforma
       </h1>
 
-      <div className="mb-10 rounded-2xl border border-[#DAA520]/30 bg-gradient-to-br from-[#DAA520]/10 to-transparent p-8">
+      <div className="jf-panel-strong mb-10 rounded-lg p-8">
         <div className="flex items-center gap-4">
-          <div className="rounded-full bg-[#DAA520]/15 p-4">
+          <div className="rounded-full bg-[#DAA520]/15 p-4 shadow-[0_0_28px_rgba(218,165,32,0.18)]">
             <Coins className="text-[#DAA520]" size={28} />
           </div>
           <div>
@@ -77,7 +77,7 @@ export default async function CreditosPage() {
         {perfilCorretor?.desbloqueios.map((desbloqueio) => (
           <div
             key={desbloqueio.id}
-            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3"
+            className="jf-panel flex items-center justify-between rounded-lg px-5 py-3"
           >
             <div>
               <p className="font-body text-sm text-white">

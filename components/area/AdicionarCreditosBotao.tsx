@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Zap } from "lucide-react";
 import { adicionarCreditosTeste } from "@/app/actions/creditos";
 
 export default function AdicionarCreditosBotao() {
@@ -19,9 +20,10 @@ export default function AdicionarCreditosBotao() {
     <button
       onClick={handleClick}
       disabled={carregando}
-      className="rounded-full bg-[#DAA520] px-5 py-2.5 font-body text-sm font-semibold text-[#050817] transition-transform hover:scale-[1.02] disabled:opacity-50"
+      className="jf-primary-action inline-flex items-center justify-center gap-2 px-5 py-2.5 font-body text-sm"
     >
-      {carregando ? "Adicionando..." : "+ 50 créditos (modo teste)"}
+      <Zap size={16} />
+      {carregando ? "Recarregando..." : "+ 50 créditos (modo teste)"}
     </button>
   );
 }

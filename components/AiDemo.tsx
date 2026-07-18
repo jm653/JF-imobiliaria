@@ -24,10 +24,12 @@ export default function AiDemo() {
     ).matches;
 
     if (reduzMovimento) {
-      setTexto(EXEMPLO);
-      setMostrarChips(true);
-      setMostrarScore(true);
-      return;
+      const timeout = setTimeout(() => {
+        setTexto(EXEMPLO);
+        setMostrarChips(true);
+        setMostrarScore(true);
+      }, 0);
+      return () => clearTimeout(timeout);
     }
 
     let ativo = true;

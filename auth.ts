@@ -20,16 +20,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!email || !senha) return null;
 
-        const usuario = await prisma.usuario.findUnique({ where: { email } });
+        const usuario = await prisma.usuario.findUnique({
+          where: { email },
+          include: {
+            perfilCliente: true,
+            perfilCorretor: true,
+          },
+        });
         if (!usuario) return null;
 
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
         if (!senhaCorreta) return null;
 
+        const papel = usuario.perfilCorretor ? "corretor" : "cliente";
+
         return {
           id: usuario.id,
           name: usuario.nome,
           email: usuario.email,
+          papel,
         };
       },
     }),
@@ -38,12 +47,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.papel = user.papel;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.papel = token.papel as "cliente" | "corretor";
       }
       return session;
     },
