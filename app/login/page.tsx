@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import BackgroundPremium from "@/components/BackgroundPremium";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
 
@@ -28,7 +26,9 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/area");
+      // Navegação completa (não SPA) garante que a sessão já esteja
+      // pronta quando a tela de transição carregar.
+      window.location.href = "/area";
     } catch (erroLogin) {
       console.error("Erro ao entrar:", erroLogin);
       setErro(

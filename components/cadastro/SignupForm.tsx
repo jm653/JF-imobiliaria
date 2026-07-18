@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import { cadastrarUsuario } from "@/app/actions/auth";
 import { useTipoConta } from "./TipoContaContext";
 
 export default function SignupForm() {
-  const router = useRouter();
   const { tipoConta, setTipoConta } = useTipoConta();
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
@@ -32,12 +30,12 @@ export default function SignupForm() {
         redirect: false,
       });
     } catch (erroLogin) {
-      // Mesmo se o login automático falhar, a conta já foi criada.
-      // Seguimos em frente e deixamos a pessoa entrar manualmente se precisar.
       console.error("Erro ao logar automaticamente após cadastro:", erroLogin);
     }
 
-    router.push("/area");
+    // Navegação completa (não SPA) garante que a sessão já esteja
+    // pronta quando a tela de transição carregar.
+    window.location.href = "/area";
   }
 
   return (
