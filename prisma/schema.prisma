@@ -89,8 +89,11 @@ model Desbloqueio {
   estagio        String   @default("novo_lead")
   criadoEm       DateTime @default(now())
 
+  mensagens Mensagem[]
+
   @@unique([pedidoId, corretorId])
   @@map("desbloqueios")
+  dataVisita DateTime?
 }
 
 model Imovel {
@@ -113,4 +116,16 @@ model Imovel {
   criadoEm DateTime @default(now())
 
   @@map("imoveis")
+}
+
+model Mensagem {
+  id            String      @id @default(cuid())
+  desbloqueioId String
+  desbloqueio   Desbloqueio @relation(fields: [desbloqueioId], references: [id], onDelete: Cascade)
+
+  autorId  String
+  conteudo String
+  criadoEm DateTime @default(now())
+
+  @@map("mensagens")
 }
