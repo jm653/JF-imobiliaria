@@ -56,6 +56,7 @@ export default function DashboardShell({
         </div>
 
         <nav className="mt-4 space-y-1 px-3">
+          <nav className="mt-4 max-h-[calc(100vh-9rem)] space-y-1 overflow-y-auto px-3"></nav>
           {itensMenu.map((item) => {
             const Icone = item.icone;
             const ativo =

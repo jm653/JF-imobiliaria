@@ -21,6 +21,8 @@ model Usuario {
   perfilCorretor PerfilCorretor?
 
   @@map("usuarios")
+  contadorAcessos Int        @default(0)
+  avaliacao       Avaliacao?
 }
 
 model PerfilCliente {
@@ -128,4 +130,16 @@ model Mensagem {
   criadoEm DateTime @default(now())
 
   @@map("mensagens")
+}
+
+model Avaliacao {
+  id        String   @id @default(cuid())
+  usuarioId String   @unique
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  nota       Int
+  comentario String?
+  criadoEm   DateTime @default(now())
+
+  @@map("avaliacoes")
 }

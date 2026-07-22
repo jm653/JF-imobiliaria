@@ -5,10 +5,13 @@ import BackgroundPremium from "@/components/BackgroundPremium";
 import SairButton from "@/components/SairButton";
 import NovoPedidoForm from "@/components/area/NovoPedidoForm";
 
+
 export default async function AreaCliente() {
   const session = await auth();
+  
   if (!session?.user) redirect("/login");
   if (session.user.papel === "corretor") redirect("/area-corretor");
+  
 
   const perfilCliente = await prisma.perfilCliente.findUnique({
     where: { usuarioId: session.user.id },
@@ -34,6 +37,8 @@ export default async function AreaCliente() {
               Olá, {session.user.name}
             </h1>
           </div>
+
+      
           <SairButton />
         </div>
 

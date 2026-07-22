@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardShell from "@/components/area/DashboardShell";
 import DesbloquearBotao from "@/components/area/DesbloquearBotao";
+import BannerAvaliacao from "@/components/area/BannerAvaliacao";
+
 import {
   ArrowUpRight,
   Coins,
@@ -136,6 +138,12 @@ export default async function AreaCorretor() {
           const desbloqueado = idsDesbloqueados.has(pedido.id);
           const compatibilidade = compatibilidadeEstimada(pedido.id, indice);
           const telefoneLimpo = pedido.cliente.usuario.telefone?.replace(/\D/g, "");
+          const usuario = await prisma.usuario.findUnique({
+            where: { id: session.user.id },
+              include: { avaliacao: true },
+            });
+            
+{usuario && usuario.contadorAcessos >= 3 && !usuario.avaliacao && <BannerAvaliacao />}
 
           return (
             <article
@@ -232,3 +240,4 @@ export default async function AreaCorretor() {
     </DashboardShell>
   );
 }
+
