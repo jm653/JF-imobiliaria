@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Header from "@/components/cadastro/Header";
 import Hero from "@/components/cadastro/Hero";
@@ -21,6 +24,19 @@ const Scene3D = dynamic(() => import("@/components/cadastro/Scene3D"), {
 });
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      router.replace("/area");
+    }
+  }, [status, session, router]);
+
+  if (status === "authenticated") {
+    return null;
+  }
+
   return (
     <TipoContaProvider>
       <SmoothScroll>

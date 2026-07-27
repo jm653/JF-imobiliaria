@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import DashboardShell from "@/components/area/DashboardShell";
 import DesbloquearBotao from "@/components/area/DesbloquearBotao";
 import BannerAvaliacao from "@/components/area/BannerAvaliacao";
-
 import {
   ArrowUpRight,
   Coins,
@@ -17,7 +16,9 @@ import {
 import Link from "next/link";
 
 function compatibilidadeEstimada(id: string, indice: number) {
-  const base = id.split("").reduce((total, char) => total + char.charCodeAt(0), 0);
+  const base = id
+    .split("")
+    .reduce((total, char) => total + char.charCodeAt(0), 0);
   return 82 + ((base + indice * 7) % 17);
 }
 
@@ -29,6 +30,11 @@ export default async function AreaCorretor() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   if (session.user.papel !== "corretor") redirect("/area-cliente");
+
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: session.user.id },
+    include: { avaliacao: true },
+  });
 
   const perfilCorretor = await prisma.perfilCorretor.findUnique({
     where: { usuarioId: session.user.id },
@@ -48,13 +54,19 @@ export default async function AreaCorretor() {
   const pedidosDisponiveis = pedidos.filter(
     (p) => !idsDesbloqueados.has(p.id)
   );
-  const pedidosDesbloqueados = pedidos.filter((p) => idsDesbloqueados.has(p.id));
+  const pedidosDesbloqueados = pedidos.filter((p) =>
+    idsDesbloqueados.has(p.id)
+  );
   const primeiroNome = session.user.name?.split(" ")[0] ?? "";
   const creditos = perfilCorretor?.creditos ?? 0;
   const score = perfilCorretor?.score ?? 0;
 
   return (
     <DashboardShell nome={session.user.name ?? ""}>
+      {usuario && usuario.contadorAcessos >= 3 && !usuario.avaliacao && (
+        <BannerAvaliacao />
+      )}
+
       <div className="mb-8 grid gap-4 xl:grid-cols-[1fr_22rem]">
         <section className="jf-panel-strong rounded-lg p-6">
           <p className="jf-kicker">Centro de comando</p>
@@ -64,9 +76,9 @@ export default async function AreaCorretor() {
                 Bom dia, {primeiroNome}
               </h1>
               <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-white/62">
-                A IA encontrou {pedidosDisponiveis.length} oportunidade(s) ativa(s)
-                para analisar hoje. Priorize os matches mais altos e transforme
-                desbloqueios em conversas.
+                A IA encontrou {pedidosDisponiveis.length} oportunidade(s)
+                ativa(s) para analisar hoje. Priorize os matches mais altos e
+                transforme desbloqueios em conversas.
               </p>
             </div>
             <Link
@@ -95,7 +107,11 @@ export default async function AreaCorretor() {
       <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           { label: "Créditos", valor: creditos, icon: Coins },
-          { label: "Oportunidades", valor: pedidosDisponiveis.length, icon: Target },
+          {
+            label: "Oportunidades",
+            valor: pedidosDisponiveis.length,
+            icon: Target,
+          },
           { label: "Contatos", valor: idsDesbloqueados.size, icon: Unlock },
           { label: "Score", valor: score.toFixed(0), icon: TrendingUp },
         ].map((item) => {
@@ -106,7 +122,9 @@ export default async function AreaCorretor() {
               <p className="font-display text-2xl font-bold text-white">
                 {item.valor}
               </p>
-              <p className="mt-1 font-body text-xs text-white/45">{item.label}</p>
+              <p className="mt-1 font-body text-xs text-white/45">
+                {item.label}
+              </p>
             </div>
           );
         })}
@@ -137,13 +155,10 @@ export default async function AreaCorretor() {
         {pedidos.map((pedido, indice) => {
           const desbloqueado = idsDesbloqueados.has(pedido.id);
           const compatibilidade = compatibilidadeEstimada(pedido.id, indice);
-          const telefoneLimpo = pedido.cliente.usuario.telefone?.replace(/\D/g, "");
-          const usuario = await prisma.usuario.findUnique({
-            where: { id: session.user.id },
-              include: { avaliacao: true },
-            });
-            
-{usuario && usuario.contadorAcessos >= 3 && !usuario.avaliacao && <BannerAvaliacao />}
+          const telefoneLimpo = pedido.cliente.usuario.telefone?.replace(
+            /\D/g,
+            ""
+          );
 
           return (
             <article
@@ -203,13 +218,7 @@ export default async function AreaCorretor() {
                 <div className="w-full shrink-0 lg:w-64">
                   {desbloqueado ? (
                     <div className="space-y-3">
-                      <div className="rounded-lg border border-[#DAA520]/28 bg-[#DAA520]/8 px-4 py-3 font-body text-sm text-[#F4C95D]">
-                        {pedido.cliente.usuario.email}
-                        {pedido.cliente.usuario.telefone
-                          ? ` · ${pedido.cliente.usuario.telefone}`
-                          : ""}
-                      </div>
-                      {telefoneLimpo && (
+                      {telefoneLimpo ? (
                         <a
                           href={`https://wa.me/${telefoneLimpo}`}
                           target="_blank"
@@ -219,6 +228,10 @@ export default async function AreaCorretor() {
                           <MessageCircle size={16} />
                           Chamar no WhatsApp
                         </a>
+                      ) : (
+                        <div className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 font-body text-sm text-white/40">
+                          Cliente ainda não adicionou telefone
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -233,11 +246,10 @@ export default async function AreaCorretor() {
 
       {pedidosDesbloqueados.length > 0 && (
         <div className="mt-8 rounded-lg border border-white/10 px-4 py-3 font-body text-sm text-white/45">
-          {pedidosDesbloqueados.length} contato(s) já estão prontos para avanço no
-          pipeline.
+          {pedidosDesbloqueados.length} contato(s) já estão prontos para
+          avanço no pipeline.
         </div>
       )}
     </DashboardShell>
   );
 }
-

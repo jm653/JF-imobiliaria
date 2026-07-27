@@ -7,7 +7,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Fase =
-  | "escurecendo"
   | "logo-entrando"
   | "frase-1"
   | "frase-2"
@@ -54,7 +53,7 @@ const particulas = Array.from({ length: TOTAL_PARTICULAS }).map((_, i) => ({
   x: aleatorioEstavel(i, 1) * 100,
   y: aleatorioEstavel(i, 2) * 100,
   tamanho: 1 + aleatorioEstavel(i, 3) * 2.5,
-  atraso: aleatorioEstavel(i, 4) * 2,
+  atraso: aleatorioEstavel(i, 4) * 3,
   duracao: 3 + aleatorioEstavel(i, 5) * 4,
 }));
 
@@ -63,7 +62,7 @@ const fragmentos = fragmentosDados.map((texto, i) => ({
   texto,
   x: (aleatorioEstavel(i, 6) - 0.5) * 140,
   y: (aleatorioEstavel(i, 7) - 0.5) * 140,
-  atraso: aleatorioEstavel(i, 8) * 0.45,
+  atraso: aleatorioEstavel(i, 8) * 0.6,
 }));
 
 function Frase({ texto, mostrar }: { texto: string; mostrar: boolean }) {
@@ -91,7 +90,8 @@ function Frase({ texto, mostrar }: { texto: string; mostrar: boolean }) {
 export default function AreaEntrada() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [fase, setFase] = useState<Fase>("escurecendo");
+  const [fase, setFase] = useState<Fase>("logo-entrando");
+  const [pronto, setPronto] = useState(false);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -114,13 +114,14 @@ export default function AreaEntrada() {
       return;
     }
 
+    setPronto(true);
+
     const tempos: Array<[Fase, number]> = [
-      ["logo-entrando", 180],
-      ["frase-1", 700],
-      ["frase-2", 1650],
-      ["parede-dados", 2450],
-      ["mergulho", 3150],
-      ["concluido", 3650],
+      ["frase-1", 1400],
+      ["frase-2", 3000],
+      ["parede-dados", 4600],
+      ["mergulho", 5600],
+      ["concluido", 6200],
     ];
 
     const timeouts = tempos.map(([proximaFase, tempo]) =>
@@ -129,7 +130,7 @@ export default function AreaEntrada() {
     const timeoutFinal = setTimeout(() => {
       sessionStorage.setItem("jf-intro-vista", "1");
       router.replace(destino);
-    }, 3900);
+    }, 6500);
 
     return () => {
       timeouts.forEach(clearTimeout);
@@ -137,7 +138,18 @@ export default function AreaEntrada() {
     };
   }, [session, status, router]);
 
-  const logoVisivel = fase !== "escurecendo" && fase !== "concluido";
+  function pular() {
+    if (!session?.user) return;
+    sessionStorage.setItem("jf-intro-vista", "1");
+    router.replace(
+      session.user.papel === "corretor" ? "/area-corretor" : "/area-cliente"
+    );
+  }
+
+  if (!pronto) {
+    return <div className="fixed inset-0 z-50 bg-[#050505]" />;
+  }
+
   const mergulhando = fase === "mergulho" || fase === "concluido";
 
   return (
@@ -172,7 +184,12 @@ export default function AreaEntrada() {
               <motion.span
                 key={f.id}
                 className="absolute whitespace-nowrap font-mono text-xs text-[#DAA520]/70 sm:text-sm"
-                initial={{ x: f.x * 0.2, y: f.y * 0.2, opacity: 0, scale: 0.5 }}
+                initial={{
+                  x: f.x * 0.2,
+                  y: f.y * 0.2,
+                  opacity: 0,
+                  scale: 0.5,
+                }}
                 animate={{
                   x: f.x * 4,
                   y: f.y * 4,
@@ -189,73 +206,60 @@ export default function AreaEntrada() {
       </AnimatePresence>
 
       <div className="relative flex h-full flex-col items-center justify-center gap-8">
-        {session?.user && (
-          <button
-            onClick={() => {
-              sessionStorage.setItem("jf-intro-vista", "1");
-              router.replace(
-                session.user.papel === "corretor"
-                  ? "/area-corretor"
-                  : "/area-cliente"
-              );
-            }}
-            className="absolute right-5 top-5 rounded-full border border-white/15 px-4 py-2 font-body text-xs text-white/50 transition-colors hover:border-white/30 hover:text-white"
-          >
-            Pular
-          </button>
-        )}
+        <button
+          onClick={pular}
+          className="absolute right-5 top-5 rounded-full border border-white/15 px-4 py-2 font-body text-xs text-white/50 transition-colors hover:border-white/30 hover:text-white"
+        >
+          Pular
+        </button>
 
-        <AnimatePresence>
-          {logoVisivel && (
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{
-                opacity: 1,
-                scale: mergulhando ? 20 : 1,
-                filter: mergulhando ? "blur(20px)" : "blur(0px)",
-              }}
-              exit={{ opacity: 0 }}
-              transition={{
-                opacity: { duration: 1 },
-                scale: mergulhando
-                  ? { duration: 1, ease: "easeIn" }
-                  : { duration: 1.2, ease: "easeOut" },
-                filter: { duration: 1 },
-              }}
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{
+            opacity: mergulhando ? 0 : 1,
+            scale: mergulhando ? 6 : 1,
+            filter: mergulhando ? "blur(16px)" : "blur(0px)",
+          }}
+          transition={{
+            opacity: { duration: mergulhando ? 0.9 : 1, ease: "easeIn" },
+            scale: mergulhando
+              ? { duration: 0.9, ease: "easeIn" }
+              : { duration: 1.2, ease: "easeOut" },
+            filter: { duration: 0.9 },
+          }}
+        >
+          <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-[#DAA520]/30 blur-3xl" />
+
+          {!mergulhando && (
+            <motion.svg
+              className="absolute -inset-4"
+              viewBox="0 0 120 120"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
             >
-              <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-[#DAA520]/30 blur-3xl" />
-
-              {!mergulhando && (
-                <motion.svg
-                  className="absolute -inset-4"
-                  viewBox="0 0 120 120"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
-                >
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="56"
-                    fill="none"
-                    stroke="#DAA520"
-                    strokeWidth="1"
-                    strokeDasharray="8 10"
-                    opacity={0.6}
-                  />
-                </motion.svg>
-              )}
-
-              <Image
-                src="/logo.jpg"
-                alt="Central dos Imóveis JF"
-                width={100}
-                height={100}
-                className="rounded-2xl"
+              <circle
+                cx="60"
+                cy="60"
+                r="56"
+                fill="none"
+                stroke="#DAA520"
+                strokeWidth="1"
+                strokeDasharray="8 10"
+                opacity={0.6}
               />
-            </motion.div>
+            </motion.svg>
           )}
-        </AnimatePresence>
+
+          <Image
+            src="/logo.jpg"
+            alt="Central dos Imóveis JF"
+            width={110}
+            height={110}
+            className="rounded-2xl"
+            priority
+          />
+        </motion.div>
 
         {!mergulhando && (
           <div className="min-h-[3.5rem]">
@@ -270,17 +274,6 @@ export default function AreaEntrada() {
           </div>
         )}
       </div>
-
-      <AnimatePresence>
-        {fase === "concluido" && (
-          <motion.div
-            className="absolute inset-0 bg-[#F4C95D]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }

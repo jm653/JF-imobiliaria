@@ -19,7 +19,7 @@ model Usuario {
 
   perfilCliente  PerfilCliente?
   perfilCorretor PerfilCorretor?
-
+  
   @@map("usuarios")
   contadorAcessos Int        @default(0)
   avaliacao       Avaliacao?
@@ -116,6 +116,8 @@ model Imovel {
 
   status   String   @default("disponivel")
   criadoEm DateTime @default(now())
+  latitude  Float?
+  longitude Float?
 
   @@map("imoveis")
 }
