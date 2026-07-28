@@ -17,12 +17,13 @@ model Usuario {
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
+  contadorAcessos Int @default(0)
+
   perfilCliente  PerfilCliente?
   perfilCorretor PerfilCorretor?
-  
+  avaliacao      Avaliacao?
+
   @@map("usuarios")
-  contadorAcessos Int        @default(0)
-  avaliacao       Avaliacao?
 }
 
 model PerfilCliente {
@@ -87,15 +88,15 @@ model Desbloqueio {
   corretorId String
   corretor   PerfilCorretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
 
-  creditosGastos Int      @default(10)
-  estagio        String   @default("novo_lead")
-  criadoEm       DateTime @default(now())
+  creditosGastos Int       @default(10)
+  estagio        String    @default("novo_lead")
+  dataVisita     DateTime?
+  criadoEm       DateTime  @default(now())
 
   mensagens Mensagem[]
 
   @@unique([pedidoId, corretorId])
   @@map("desbloqueios")
-  dataVisita DateTime?
 }
 
 model Imovel {
@@ -113,11 +114,11 @@ model Imovel {
   varanda   Boolean @default(false)
   quintal   Boolean @default(false)
   descricao String?
+  latitude  Float?
+  longitude Float?
 
   status   String   @default("disponivel")
   criadoEm DateTime @default(now())
-  latitude  Float?
-  longitude Float?
 
   @@map("imoveis")
 }
