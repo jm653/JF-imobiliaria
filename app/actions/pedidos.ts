@@ -4,6 +4,32 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
+async function geocodificar(cidade: string, bairro: string | null) {
+  const consulta = encodeURIComponent(
+    `${bairro ? bairro + ", " : ""}${cidade}, Brasil`
+  );
+  try {
+    const resposta = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${consulta}&format=json&limit=1`,
+      {
+        headers: {
+          "User-Agent": "CentralDosImoveisJF/1.0",
+        },
+      }
+    );
+    const dados = await resposta.json();
+    if (dados?.[0]) {
+      return {
+        latitude: parseFloat(dados[0].lat),
+        longitude: parseFloat(dados[0].lon),
+      };
+    }
+  } catch {
+    // Falha silenciosa: o pedido é criado sem coordenadas nesse caso
+  }
+  return { latitude: null, longitude: null };
+}
+
 export async function criarPedido(formData: FormData) {
   const session = await auth();
   if (!session?.user || session.user.papel !== "cliente") {
@@ -37,6 +63,8 @@ export async function criarPedido(formData: FormData) {
     return { erro: "Preencha ao menos cidade e valor máximo." };
   }
 
+  const { latitude, longitude } = await geocodificar(cidade, bairro);
+
   await prisma.pedidoImovel.create({
     data: {
       clienteId: perfilCliente.id,
@@ -51,11 +79,14 @@ export async function criarPedido(formData: FormData) {
       aceitaPet,
       aceitaFinanciamento,
       descricaoLivre,
+      latitude,
+      longitude,
     },
   });
 
   revalidatePath("/area-cliente");
   revalidatePath("/area-corretor");
+  revalidatePath("/area/mapa");
 
   return { sucesso: true };
 }
@@ -114,4 +145,4 @@ export async function desbloquearContato(pedidoId: string) {
   revalidatePath("/area/ranking");
 
   return { sucesso: true };
-}
+} 

@@ -15,6 +15,7 @@ import {
   Trophy,
   Gift,
   BarChart3,
+  MapPin,
   Settings,
 } from "lucide-react";
 import { ReactNode } from "react";
@@ -34,6 +35,7 @@ const itensMenu = [
   { icone: Gift, label: "Recompensas", href: "/area/recompensas" },
   { icone: BarChart3, label: "Analytics", href: "/area/em-breve" },
   { icone: Settings, label: "Configurações", href: "/area/configuracoes" },
+  { icone: MapPin, label: "Mapa", href: "/area/mapa" },
 ];
 
 export default function DashboardShell({
