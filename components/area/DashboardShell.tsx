@@ -17,6 +17,7 @@ import {
   BarChart3,
   MapPin,
   Settings,
+  Bell
 } from "lucide-react";
 import { ReactNode } from "react";
 import SairButton from "@/components/SairButton";
@@ -36,6 +37,7 @@ const itensMenu = [
   { icone: BarChart3, label: "Analytics", href: "/area/em-breve" },
   { icone: Settings, label: "Configurações", href: "/area/configuracoes" },
   { icone: MapPin, label: "Mapa", href: "/area/mapa" },
+  { icone: Bell, label: "Notificações", href: "/area/notificacoes" },
 ];
 
 export default function DashboardShell({

@@ -2,12 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardShell from "@/components/area/DashboardShell";
-import dynamic from "next/dynamic";
-
-const MapaOportunidades = dynamic(
-  () => import("@/components/area/MapaOportunidades"),
-  { ssr: false }
-);
+import MapaOportunidadesClient from "@/components/area/MapaOportunidadesClient";
 
 export default async function MapaCorretorPage() {
   const session = await auth();
@@ -54,7 +49,7 @@ export default async function MapaCorretorPage() {
           Nenhum pedido com localização disponível ainda.
         </div>
       ) : (
-        <MapaOportunidades pedidos={pedidosComCoordenadas} />
+        <MapaOportunidadesClient pedidos={pedidosComCoordenadas} />
       )}
     </DashboardShell>
   );

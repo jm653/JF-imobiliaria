@@ -32,37 +32,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
         if (!senhaCorreta) return null;
 
-        const papel = usuario.perfilCorretor ? "corretor" : "cliente";
-
         return {
           id: usuario.id,
           name: usuario.nome,
           email: usuario.email,
-          papel,
+          papel: usuario.perfilCorretor ? "corretor" : "cliente",
         };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user, trigger }) {
-  if (user) {
-    token.id = user.id;
-    token.papel = user.papel;
-  }
-  if (trigger === "signIn") {
-    await prisma.usuario.update({
-      where: { id: token.id as string },
-      data: { contadorAcessos: { increment: 1 } },
-    });
-  }
-  return token;
-},
-    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.papel = user.papel;
       }
-      
+
+      if (trigger === "signIn" && token.id) {
+        await prisma.usuario.update({
+          where: { id: token.id as string },
+          data: { contadorAcessos: { increment: 1 } },
+        });
+      }
+
       return token;
     },
     async session({ session, token }) {

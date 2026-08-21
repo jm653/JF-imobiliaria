@@ -114,7 +114,7 @@ export default function AreaEntrada() {
       return;
     }
 
-    setPronto(true);
+    const timeoutPronto = setTimeout(() => setPronto(true), 0);
 
     const tempos: Array<[Fase, number]> = [
       ["frase-1", 1400],
@@ -133,6 +133,7 @@ export default function AreaEntrada() {
     }, 6500);
 
     return () => {
+      clearTimeout(timeoutPronto);
       timeouts.forEach(clearTimeout);
       clearTimeout(timeoutFinal);
     };

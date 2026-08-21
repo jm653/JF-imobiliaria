@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
-import { enviarMensagem } from "@/app/actions/mensagens";
+import { enviarMensagem } from "@/app/actions/mensagem";
 
 export default function CaixaMensagem({
   desbloqueioId,

@@ -1,0 +1,1 @@
+export { enviarMensagem } from "./mensagem";

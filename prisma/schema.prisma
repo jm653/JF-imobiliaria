@@ -54,6 +54,7 @@ model PerfilCorretor {
   imoveis      Imovel[]
 
   @@map("perfis_corretor")
+  notificacoes Notificacao[]
 }
 
 model PedidoImovel {
@@ -72,6 +73,8 @@ model PedidoImovel {
   aceitaPet           Boolean @default(false)
   aceitaFinanciamento Boolean @default(false)
   descricaoLivre      String?
+  latitude            Float?
+  longitude           Float?
 
   status   String   @default("ativo")
   criadoEm DateTime @default(now())
@@ -92,6 +95,7 @@ model Desbloqueio {
   estagio        String    @default("novo_lead")
   dataVisita     DateTime?
   criadoEm       DateTime  @default(now())
+  reembolsado    Boolean   @default(false)
 
   mensagens Mensagem[]
 
@@ -105,17 +109,24 @@ model Imovel {
   corretor   PerfilCorretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
 
   titulo    String
+  tipo      String  @default("casa")
   cidade    String
   bairro    String?
   valor     Int
   quartos   Int?
   banheiros Int?
+  vagas     Int?
+  areaM2    Int?
   garagem   Boolean @default(false)
   varanda   Boolean @default(false)
   quintal   Boolean @default(false)
+  piscina   Boolean @default(false)
+  aceitaPet Boolean @default(false)
   descricao String?
   latitude  Float?
   longitude Float?
+  embeddingTexto String?
+  embedding      Float[] @default([])
 
   status   String   @default("disponivel")
   criadoEm DateTime @default(now())
@@ -145,4 +156,18 @@ model Avaliacao {
   criadoEm   DateTime @default(now())
 
   @@map("avaliacoes")
+}
+
+model Notificacao {
+  id         String         @id @default(cuid())
+  corretorId String
+  corretor   PerfilCorretor @relation (fields: [corretorId], references: [id], onDelete: Cascade)
+
+  titulo   String
+  mensagem String
+  lida     Boolean  @default(false)
+  link     String?
+  criadoEm DateTime @default(now())
+
+  @@map("notificacoes")
 }

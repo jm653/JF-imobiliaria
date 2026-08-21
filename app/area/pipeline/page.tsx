@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardShell from "@/components/area/DashboardShell";
 import CartaoPipeline from "@/components/area/CartaoPipeline";
+import BotaoSolicitarReembolso from "@/components/area/BotaoSolicitarReembolso";
 
 const ESTAGIOS = [
   { id: "novo_lead", label: "Novo Lead" },
@@ -33,7 +34,9 @@ export default async function PipelinePage() {
     },
   });
 
-  const desbloqueios = perfilCorretor?.desbloqueios ?? [];
+  const desbloqueios = (perfilCorretor?.desbloqueios ?? []).filter(
+    (d) => !d.reembolsado
+  );
 
   return (
     <DashboardShell nome={session.user.name ?? ""}>
@@ -77,16 +80,20 @@ export default async function PipelinePage() {
 
               <div className="space-y-2">
                 {itens.map((item) => (
-                  <CartaoPipeline
-                    key={item.id}
-                    desbloqueioId={item.id}
-                    nomeCliente={item.pedido.cliente.usuario.nome}
-                    cidade={item.pedido.cidade}
-                    valorMaximo={item.pedido.valorMaximo}
-                    estagioAtual={item.estagio}
-                    estagioAnterior={anterior}
-                    proximoEstagio={proximo}
-                  />
+                  <div key={item.id}>
+                    <CartaoPipeline
+                      desbloqueioId={item.id}
+                      nomeCliente={item.pedido.cliente.usuario.nome}
+                      cidade={item.pedido.cidade}
+                      valorMaximo={item.pedido.valorMaximo}
+                      estagioAtual={item.estagio}
+                      estagioAnterior={anterior}
+                      proximoEstagio={proximo}
+                    />
+                    {estagio.id === "novo_lead" && (
+                      <BotaoSolicitarReembolso desbloqueioId={item.id} />
+                    )}
+                  </div>
                 ))}
               </div>
             </section>

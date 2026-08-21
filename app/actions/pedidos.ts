@@ -11,11 +11,7 @@ async function geocodificar(cidade: string, bairro: string | null) {
   try {
     const resposta = await fetch(
       `https://nominatim.openstreetmap.org/search?q=${consulta}&format=json&limit=1`,
-      {
-        headers: {
-          "User-Agent": "CentralDosImoveisJF/1.0",
-        },
-      }
+      { headers: { "User-Agent": "CentralDosImoveisJF/1.0" } }
     );
     const dados = await resposta.json();
     if (dados?.[0]) {
@@ -28,6 +24,20 @@ async function geocodificar(cidade: string, bairro: string | null) {
     // Falha silenciosa: o pedido é criado sem coordenadas nesse caso
   }
   return { latitude: null, longitude: null };
+}
+
+function calcularCompatibilidadeSimples(
+  pedido: { cidade: string; valorMaximo: number },
+  imovel: { cidade: string; valor: number }
+) {
+  if (
+    pedido.cidade.trim().toLowerCase() !== imovel.cidade.trim().toLowerCase()
+  ) {
+    return 0;
+  }
+  if (imovel.valor <= pedido.valorMaximo) return 90;
+  const excedente = (imovel.valor - pedido.valorMaximo) / pedido.valorMaximo;
+  return Math.max(0, 90 - excedente * 100);
 }
 
 export async function criarPedido(formData: FormData) {
@@ -84,9 +94,38 @@ export async function criarPedido(formData: FormData) {
     },
   });
 
+  // IA 3 — Busca automática: avisa corretores com imóveis compatíveis
+  const todosImoveis = await prisma.imovel.findMany({
+    where: { status: "disponivel" },
+  });
+
+  const compativeis = todosImoveis
+    .map((imovel) => ({
+      imovel,
+      score: calcularCompatibilidadeSimples(
+        { cidade, valorMaximo },
+        { cidade: imovel.cidade, valor: imovel.valor }
+      ),
+    }))
+    .filter((r) => r.score >= 70);
+
+  if (compativeis.length > 0) {
+    await prisma.notificacao.createMany({
+      data: compativeis.map((r) => ({
+        corretorId: r.imovel.corretorId,
+        titulo: "Nova oportunidade compatível!",
+        mensagem: `Um cliente busca imóvel em ${cidade} até R$ ${valorMaximo.toLocaleString(
+          "pt-BR"
+        )} — compatível com "${r.imovel.titulo}".`,
+        link: "/area/descoberta",
+      })),
+    });
+  }
+
   revalidatePath("/area-cliente");
   revalidatePath("/area-corretor");
   revalidatePath("/area/mapa");
+  revalidatePath("/area/notificacoes");
 
   return { sucesso: true };
 }
@@ -145,4 +184,4 @@ export async function desbloquearContato(pedidoId: string) {
   revalidatePath("/area/ranking");
 
   return { sucesso: true };
-} 
+}

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardShellCliente from "@/components/area/DashboardShellCliente";
 import Link from "next/link";
+import SimuladorFinanciamento from "@/components/area/SimuladorFinanciamento";
 
 export default async function ImovelDetalhePage({
   params,
@@ -59,6 +60,12 @@ export default async function ImovelDetalhePage({
             {imovel.descricao}
           </p>
         )}
+        <div className="jf-panel mt-6 rounded-lg p-6">
+  <h2 className="mb-4 font-display text-lg font-semibold text-white">
+    Simule o financiamento
+  </h2>
+  <SimuladorFinanciamento valorImovel={imovel.valor} />
+</div>
 
         <div className="jf-panel mt-8 rounded-lg p-5">
           <p className="font-body text-sm text-white/50">Anunciado por</p>

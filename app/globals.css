@@ -49,6 +49,9 @@
 }
 
 :root {
+  --fonte-display: "Manrope", "Inter", "Segoe UI", Arial, sans-serif;
+  --fonte-body: "Inter", "Segoe UI", Arial, sans-serif;
+  --fonte-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
   --jf-bg: #050505;
   --jf-bg-soft: #080a14;
   --jf-navy: #120a8f;
