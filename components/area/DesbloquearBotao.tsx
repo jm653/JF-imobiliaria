@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LockKeyholeOpen } from "lucide-react";
 import { desbloquearContato } from "@/app/actions/pedidos";
+import BotaoAnimado from "@/components/area/BotaoAnimado";
 
 export default function DesbloquearBotao({
   pedidoId,
@@ -33,14 +33,9 @@ export default function DesbloquearBotao({
 
   return (
     <div>
-      <button
-        onClick={handleClick}
-        disabled={carregando}
-        className="jf-primary-action inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 font-body text-sm"
-      >
-        <LockKeyholeOpen size={16} />
+      <BotaoAnimado tipo="button" onClick={handleClick} disabled={carregando}>
         {carregando ? "Desbloqueando..." : `Desbloquear · ${custo} créditos`}
-      </button>
+      </BotaoAnimado>
       {erro && <p className="mt-2 text-xs text-red-300">{erro}</p>}
     </div>
   );

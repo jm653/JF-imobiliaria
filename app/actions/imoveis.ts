@@ -6,6 +6,9 @@ import { revalidatePath } from "next/cache";
 import { LocalEmbeddingProvider } from "@/lib/jf-intelligence";
 import { buildPropertyEmbeddingText } from "@/lib/jf-intelligence/embeddings/property-text";
 import { normalizeProperty } from "@/lib/jf-intelligence/normalization/normalizer";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { randomUUID } from "node:crypto";
 
 function booleanField(formData: FormData, key: string) {
   return formData.get(key) === "on";
@@ -16,6 +19,29 @@ function optionalNumber(formData: FormData, key: string) {
   if (!value) return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
+}
+
+async function salvarFotos(formData: FormData) {
+  const arquivos = formData
+    .getAll("fotos")
+    .filter((arquivo): arquivo is File => arquivo instanceof File && arquivo.size > 0)
+    .slice(0, 8);
+  const pasta = path.join(process.cwd(), "public", "uploads", "imoveis");
+  await mkdir(pasta, { recursive: true });
+  const fotos: string[] = [];
+
+  for (const arquivo of arquivos) {
+    if (!arquivo.type.startsWith("image/") || arquivo.size > 6 * 1024 * 1024) {
+      continue;
+    }
+    const extensao = arquivo.type.split("/")[1]?.replace("jpeg", "jpg");
+    if (!extensao) continue;
+    const nome = `${randomUUID()}.${extensao}`;
+    await writeFile(path.join(pasta, nome), Buffer.from(await arquivo.arrayBuffer()));
+    fotos.push(`/uploads/imoveis/${nome}`);
+  }
+
+  return fotos;
 }
 
 export async function criarImovel(formData: FormData) {
@@ -35,6 +61,7 @@ export async function criarImovel(formData: FormData) {
   const tipo = String(formData.get("tipo") ?? "casa");
   const bairro = String(formData.get("bairro") ?? "").trim() || null;
   const descricao = String(formData.get("descricao") ?? "").trim() || null;
+  const fotos = await salvarFotos(formData);
 
   if (!titulo || !cidade || !Number.isFinite(valor) || valor <= 0) {
     return { erro: "Preencha título, cidade e valor corretamente." };
@@ -83,6 +110,7 @@ export async function criarImovel(formData: FormData) {
       piscina: draft.piscina,
       aceitaPet: draft.aceitaPet,
       descricao,
+      fotos,
       latitude: draft.latitude,
       longitude: draft.longitude,
       embeddingTexto,

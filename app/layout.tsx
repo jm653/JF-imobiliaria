@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import RouteTransition from "@/components/RouteTransition";
 
 export const metadata: Metadata = {
   title: "Central dos Imóveis JF — O futuro do mercado imobiliário",
@@ -18,7 +19,9 @@ export default function RootLayout({
       <body
         className="antialiased"
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <RouteTransition>{children}</RouteTransition>
+        </Providers>
       </body>
     </html>
   );

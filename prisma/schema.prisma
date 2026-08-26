@@ -52,9 +52,9 @@ model PerfilCorretor {
 
   desbloqueios Desbloqueio[]
   imoveis      Imovel[]
+  notificacoes Notificacao[]
 
   @@map("perfis_corretor")
-  notificacoes Notificacao[]
 }
 
 model PedidoImovel {
@@ -123,6 +123,7 @@ model Imovel {
   piscina   Boolean @default(false)
   aceitaPet Boolean @default(false)
   descricao String?
+  fotos     String[] @default([])
   latitude  Float?
   longitude Float?
   embeddingTexto String?

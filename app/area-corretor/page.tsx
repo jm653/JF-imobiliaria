@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import DashboardShell from "@/components/area/DashboardShell";
 import DesbloquearBotao from "@/components/area/DesbloquearBotao";
 import BannerAvaliacao from "@/components/area/BannerAvaliacao";
+import BotaoAnimado from "@/components/area/BotaoAnimado";
 import {
   ArrowUpRight,
   Coins,
@@ -219,15 +220,9 @@ export default async function AreaCorretor() {
                   {desbloqueado ? (
                     <div className="space-y-3">
                       {telefoneLimpo ? (
-                        <a
-                          href={`https://wa.me/${telefoneLimpo}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-400 px-4 py-2.5 font-body text-sm font-semibold text-[#05110b] transition-transform hover:scale-[1.01]"
-                        >
-                          <MessageCircle size={16} />
+                        <BotaoAnimado href={`https://wa.me/${telefoneLimpo}`} externo>
                           Chamar no WhatsApp
-                        </a>
+                        </BotaoAnimado>
                       ) : (
                         <div className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 font-body text-sm text-white/40">
                           Cliente ainda não adicionou telefone

@@ -3,7 +3,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardShellCliente from "@/components/area/DashboardShellCliente";
 import Link from "next/link";
+import Image from "next/image";
 import SimuladorFinanciamento from "@/components/area/SimuladorFinanciamento";
+import BotaoAnimado from "@/components/area/BotaoAnimado";  
 
 export default async function ImovelDetalhePage({
   params,
@@ -34,6 +36,21 @@ export default async function ImovelDetalhePage({
       </Link>
 
       <div className="jf-panel-strong rounded-lg p-8">
+        {imovel.fotos.length > 0 && (
+          <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {imovel.fotos.map((foto, indice) => (
+              <Image
+                key={foto}
+                src={foto}
+                alt={`${imovel.titulo} - foto ${indice + 1}`}
+                width={800}
+                height={600}
+                unoptimized
+                className="aspect-4/3 w-full rounded-lg object-cover"
+              />
+            ))}
+          </div>
+        )}
         <p className="jf-kicker">
           {imovel.cidade}
           {imovel.bairro ? ` — ${imovel.bairro}` : ""}
@@ -73,14 +90,9 @@ export default async function ImovelDetalhePage({
             {imovel.corretor.usuario.nome}
           </p>
           {telefoneLimpo ? (
-            <a
-              href={`https://wa.me/${telefoneLimpo}`}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 font-body text-sm font-semibold text-[#05110b] transition-transform hover:scale-[1.02]"
-            >
+            <BotaoAnimado href={`https://wa.me/${telefoneLimpo}`} externo>
               Falar no WhatsApp
-            </a>
+            </BotaoAnimado>
           ) : (
             <p className="mt-3 font-body text-xs text-white/40">
               Corretor ainda não adicionou telefone.
